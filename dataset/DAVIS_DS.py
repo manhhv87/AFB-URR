@@ -29,8 +29,10 @@ class DAVIS_Train_DS(data.Dataset):
 
         self.random_horizontal_flip = mytrans.RandomHorizontalFlip(0.3)
         self.color_jitter = TF.ColorJitter(0.1, 0.1, 0.1, 0.02)
-        self.random_affine = mytrans.RandomAffine(degrees=15, translate=(0.1, 0.1), scale=(0.95, 1.05), shear=10)
-        self.random_resize_crop = mytrans.RandomResizedCrop(output_size, (0.8, 1), (0.95, 1.05))
+        self.random_affine = mytrans.RandomAffine(
+            degrees=15, translate=(0.1, 0.1), scale=(0.95, 1.05), shear=10)
+        self.random_resize_crop = mytrans.RandomResizedCrop(
+            output_size, (0.8, 1), (0.95, 1.05))
         self.to_tensor = TF.ToTensor()
         self.to_onehot = mytrans.ToOnehot(max_obj_n, shuffle=True)
 
@@ -50,8 +52,10 @@ class DAVIS_Train_DS(data.Dataset):
         random.shuffle(idx_list)
         idx_list = idx_list[:self.clip_n]
 
-        frames = torch.zeros((self.clip_n, 3, self.output_size, self.output_size), dtype=torch.float)
-        masks = torch.zeros((self.clip_n, self.max_obj_n, self.output_size, self.output_size), dtype=torch.float)
+        frames = torch.zeros(
+            (self.clip_n, 3, self.output_size, self.output_size), dtype=torch.float)
+        masks = torch.zeros((self.clip_n, self.max_obj_n,
+                            self.output_size, self.output_size), dtype=torch.float)
 
         for i, frame_idx in enumerate(idx_list):
             img = myutils.load_image_in_PIL(img_list[frame_idx], 'RGB')

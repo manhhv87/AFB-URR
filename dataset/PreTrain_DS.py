@@ -29,7 +29,8 @@ class PreTrain_DS(data.Dataset):
                 img_dir = os.path.join(root, 'JPEGImages', dataset_name)
                 mask_dir = os.path.join(root, 'Annotations', dataset_name)
 
-                img_list = sorted(glob(os.path.join(img_dir, '*.jpg'))) + sorted(glob(os.path.join(img_dir, '*.png')))
+                img_list = sorted(glob(os.path.join(img_dir, '*.jpg'))) + \
+                    sorted(glob(os.path.join(img_dir, '*.png')))
                 mask_list = sorted(glob(os.path.join(mask_dir, '*.png')))
 
                 if len(img_list) > 0:
@@ -39,16 +40,21 @@ class PreTrain_DS(data.Dataset):
                         self.mask_list += mask_list
                         print(f'\t{dataset_name}: {len(img_list)} imgs.')
                     else:
-                        print(f'\tPreTrain dataset {dataset_name} has {len(img_list)} imgs and {len(mask_list)} annots. Not match! Skip.')
+                        print(
+                            f'\tPreTrain dataset {dataset_name} has {len(img_list)} imgs and {len(mask_list)} annots. Not match! Skip.')
                 else:
-                    print(f'\tPreTrain dataset {dataset_name} doesn\'t exist. Skip.')
+                    print(
+                        f'\tPreTrain dataset {dataset_name} doesn\'t exist. Skip.')
 
-        print(myutils.gct(), f'{len(self.img_list)} imgs are used for PreTrain. They are from {dataset_list}.')
+        print(myutils.gct(
+        ), f'{len(self.img_list)} imgs are used for PreTrain. They are from {dataset_list}.')
 
         self.random_horizontal_flip = mytrans.RandomHorizontalFlip(0.3)
         self.color_jitter = TF.ColorJitter(0.1, 0.1, 0.1, 0.03)
-        self.random_affine = mytrans.RandomAffine(degrees=20, translate=(0.1, 0.1), scale=(0.9, 1.1), shear=10)
-        self.random_resize_crop = mytrans.RandomResizedCrop(output_size, (0.8, 1))
+        self.random_affine = mytrans.RandomAffine(
+            degrees=20, translate=(0.1, 0.1), scale=(0.9, 1.1), shear=10)
+        self.random_resize_crop = mytrans.RandomResizedCrop(
+            output_size, (0.8, 1))
         self.to_tensor = TF.ToTensor()
         self.to_onehot = mytrans.ToOnehot(max_obj_n, shuffle=True)
 
@@ -60,8 +66,10 @@ class PreTrain_DS(data.Dataset):
         img_pil = myutils.load_image_in_PIL(self.img_list[idx], 'RGB')
         mask_pil = myutils.load_image_in_PIL(self.mask_list[idx], 'P')
 
-        frames = torch.zeros((self.clip_n, 3, self.output_size, self.output_size), dtype=torch.float)
-        masks = torch.zeros((self.clip_n, self.max_obj_n, self.output_size, self.output_size), dtype=torch.float)
+        frames = torch.zeros(
+            (self.clip_n, 3, self.output_size, self.output_size), dtype=torch.float)
+        masks = torch.zeros((self.clip_n, self.max_obj_n,
+                            self.output_size, self.output_size), dtype=torch.float)
 
         for i in range(self.clip_n):
             img, mask = img_pil, mask_pil

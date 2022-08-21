@@ -40,7 +40,8 @@ class LongVideo_Test_DS(data.Dataset):
 class Video_DS(data.Dataset):
 
     def __init__(self, img_dir, mask_dir):
-        self.img_list = sorted(glob(os.path.join(img_dir, '*.jpg')) + glob(os.path.join(img_dir, '*.png')))
+        self.img_list = sorted(
+            glob(os.path.join(img_dir, '*.jpg')) + glob(os.path.join(img_dir, '*.png')))
         self.mask_list = sorted(glob(os.path.join(mask_dir, '*.png')))
 
         first_mask = myutils.load_image_in_PIL(self.mask_list[0], 'P')

@@ -87,7 +87,8 @@ class RandomAffine(object):
     def __init__(self, degrees, translate=None, scale=None, shear=None, resample=False, fillcolor=0):
         if isinstance(degrees, numbers.Number):
             if degrees < 0:
-                raise ValueError("If degrees is a single number, it must be positive.")
+                raise ValueError(
+                    "If degrees is a single number, it must be positive.")
             self.degrees = (-degrees, degrees)
         else:
             assert isinstance(degrees, (tuple, list)) and len(degrees) == 2, \
@@ -99,7 +100,8 @@ class RandomAffine(object):
                 "translate should be a list or tuple and it must be of length 2."
             for t in translate:
                 if not (0.0 <= t <= 1.0):
-                    raise ValueError("translation values should be between 0 and 1")
+                    raise ValueError(
+                        "translation values should be between 0 and 1")
         self.translate = translate
 
         if scale is not None:
@@ -113,11 +115,12 @@ class RandomAffine(object):
         if shear is not None:
             if isinstance(shear, numbers.Number):
                 if shear < 0:
-                    raise ValueError("If shear is a single number, it must be positive.")
+                    raise ValueError(
+                        "If shear is a single number, it must be positive.")
                 self.shear = (-shear, shear)
             else:
                 assert isinstance(shear, (tuple, list)) and \
-                       (len(shear) == 2 or len(shear) == 4), \
+                    (len(shear) == 2 or len(shear) == 4), \
                     "shear should be a list or tuple and it must be of length 2 or 4."
                 # X-Axis shear with [min, max]
                 if len(shear) == 2:
@@ -169,9 +172,12 @@ class RandomAffine(object):
         Returns:
             PIL Image: Affine transformed image.
         """
-        ret = self.get_params(self.degrees, self.translate, self.scale, self.shear, img.size)
-        img = TF.affine(img, *ret, resample=self.resample, fillcolor=self.fillcolor)
-        mask = TF.affine(mask, *ret, resample=Image.NEAREST, fillcolor=self.fillcolor)
+        ret = self.get_params(self.degrees, self.translate,
+                              self.scale, self.shear, img.size)
+        img = TF.affine(img, *ret, resample=self.resample,
+                        fillcolor=self.fillcolor)
+        mask = TF.affine(mask, *ret, resample=Image.NEAREST,
+                         fillcolor=self.fillcolor)
         return img, mask
 
     def __repr__(self):
@@ -374,8 +380,10 @@ class RandomResizedCrop(object):
     def __repr__(self):
         interpolate_str = _pil_interpolation_to_str[self.interpolation]
         format_string = self.__class__.__name__ + '(size={0}'.format(self.size)
-        format_string += ', scale={0}'.format(tuple(round(s, 4) for s in self.scale))
-        format_string += ', ratio={0}'.format(tuple(round(r, 4) for r in self.ratio))
+        format_string += ', scale={0}'.format(tuple(round(s, 4)
+                                              for s in self.scale))
+        format_string += ', ratio={0}'.format(tuple(round(r, 4)
+                                              for r in self.ratio))
         format_string += ', interpolation={0})'.format(interpolate_str)
         return format_string
 
@@ -445,9 +453,11 @@ class Resize(torch.nn.Module):
     def __init__(self, size, interpolation=Image.BILINEAR):
         super().__init__()
         if not isinstance(size, (int, Sequence)):
-            raise TypeError("Size should be int or sequence. Got {}".format(type(size)))
+            raise TypeError(
+                "Size should be int or sequence. Got {}".format(type(size)))
         if isinstance(size, Sequence) and len(size) not in (1, 2):
-            raise ValueError("If size is a sequence, it should have 1 or 2 values")
+            raise ValueError(
+                "If size is a sequence, it should have 1 or 2 values")
         self.size = size
         self.interpolation = interpolation
 

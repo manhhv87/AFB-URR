@@ -2,7 +2,7 @@ import os
 from glob import glob
 from collections import defaultdict
 import numpy as np
-from PIL import  Image
+from PIL import Image
 
 
 class LongVideoDataset(object):
@@ -20,7 +20,8 @@ class LongVideoDataset(object):
         :param resolution: Specify the resolution to use the dataset, choose between '480' and 'Full-Resolution'
         """
         if task not in self.TASKS:
-            raise ValueError(f'The only tasks that are supported are {self.TASKS}')
+            raise ValueError(
+                f'The only tasks that are supported are {self.TASKS}')
 
         self.task = task
         self.root_folder = root_folder
@@ -35,7 +36,8 @@ class LongVideoDataset(object):
                 tmp = f.readlines()
             sequences_names = [x.strip() for x in tmp]
         else:
-            sequences_names = sequences if isinstance(sequences, list) else [sequences]
+            sequences_names = sequences if isinstance(
+                sequences, list) else [sequences]
         self.sequences = defaultdict(dict)
 
         while True:
@@ -46,19 +48,24 @@ class LongVideoDataset(object):
         print('Seq names:', sequences_names)
 
         for seq in sequences_names:
-            images = np.sort(glob(os.path.join(self.img_path, seq, '*.jpg'))).tolist()
+            images = np.sort(
+                glob(os.path.join(self.img_path, seq, '*.jpg'))).tolist()
             if len(images) == 0:
-                images = np.sort(glob(os.path.join(self.img_path, seq, '*.png'))).tolist()
+                images = np.sort(
+                    glob(os.path.join(self.img_path, seq, '*.png'))).tolist()
                 if len(images) == 0:
-                    raise FileNotFoundError(f'Images for sequence {seq} not found.')
+                    raise FileNotFoundError(
+                        f'Images for sequence {seq} not found.')
             self.sequences[seq]['images'] = images
-            masks = np.sort(glob(os.path.join(self.mask_path, seq, '*.png'))).tolist()
+            masks = np.sort(
+                glob(os.path.join(self.mask_path, seq, '*.png'))).tolist()
             self.sequences[seq]['masks'] = masks
             self.sequences[seq]['images'] = masks
-        
+
     def _check_directories(self):
         if not os.path.exists(self.root_folder):
-            raise FileNotFoundError(f'WaterDataset not found in the specified directory, download it from {self.DATASET_WEB}')
+            raise FileNotFoundError(
+                f'WaterDataset not found in the specified directory, download it from {self.DATASET_WEB}')
 
     def get_frames(self, sequence):
         for img, msk in zip(self.sequences[sequence]['images'], self.sequences[sequence]['masks']):
@@ -72,7 +79,8 @@ class LongVideoDataset(object):
 
     def _get_all_elements(self, sequence, obj_type):
         obj = np.array(Image.open(self.sequences[sequence][obj_type][0]))
-        all_objs = np.zeros((len(self.sequences[sequence][obj_type]), *obj.shape))
+        all_objs = np.zeros(
+            (len(self.sequences[sequence][obj_type]), *obj.shape))
         obj_id = []
         for i, obj in enumerate(self.sequences[sequence][obj_type]):
             all_objs[i, ...] = np.array(Image.open(obj))

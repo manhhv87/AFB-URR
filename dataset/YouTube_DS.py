@@ -30,8 +30,10 @@ class YouTube_Train_DS(data.Dataset):
 
         self.random_horizontal_flip = mytrans.RandomHorizontalFlip(0.3)
         self.color_jitter = TF.ColorJitter(0.1, 0.1, 0.1, 0.02)
-        self.random_affine = mytrans.RandomAffine(degrees=15, translate=(0.1, 0.1), scale=(0.95, 1.05), shear=10)
-        self.random_resize_crop = mytrans.RandomResizedCrop(output_size, (0.3, 0.5), (0.95, 1.05))
+        self.random_affine = mytrans.RandomAffine(
+            degrees=15, translate=(0.1, 0.1), scale=(0.95, 1.05), shear=10)
+        self.random_resize_crop = mytrans.RandomResizedCrop(
+            output_size, (0.3, 0.5), (0.95, 1.05))
         self.to_tensor = TF.ToTensor()
         self.to_onehot = mytrans.ToOnehot(max_obj_n, shuffle=True)
 
@@ -51,8 +53,10 @@ class YouTube_Train_DS(data.Dataset):
         random.shuffle(idx_list)
         idx_list = idx_list[:self.clip_n]
 
-        frames = torch.zeros((self.clip_n, 3, self.output_size, self.output_size), dtype=torch.float)
-        masks = torch.zeros((self.clip_n, self.max_obj_n, self.output_size, self.output_size), dtype=torch.float)
+        frames = torch.zeros(
+            (self.clip_n, 3, self.output_size, self.output_size), dtype=torch.float)
+        masks = torch.zeros((self.clip_n, self.max_obj_n,
+                            self.output_size, self.output_size), dtype=torch.float)
 
         for i, frame_idx in enumerate(idx_list):
             img = myutils.load_image_in_PIL(img_list[frame_idx], 'RGB')
@@ -128,7 +132,8 @@ class YouTube_Test_DS(data.Dataset):
         for obj_idx, obj_gt in objs.items():
             obj_n = max(obj_n, int(obj_idx) + 1)
             video_obj_appear_idx = basename_list.index(obj_gt['frames'][0])
-            video_obj_appear_st_idx = min(video_obj_appear_st_idx, video_obj_appear_idx)
+            video_obj_appear_st_idx = min(
+                video_obj_appear_st_idx, video_obj_appear_idx)
 
         selected_idx[:video_obj_appear_st_idx] = False
         selected_idx = selected_idx.tolist()

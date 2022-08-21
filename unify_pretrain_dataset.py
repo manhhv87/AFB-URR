@@ -18,9 +18,12 @@ except ImportError as e:
 
 def get_args():
     parser = argparse.ArgumentParser(description='Unify Pretrain Dataset')
-    parser.add_argument('--dst', type=str, default='/Ship01/Dataset/VOS/pretrain')
-    parser.add_argument('--palette', type=str, default='./assets/mask_palette.png')
-    parser.add_argument('--worker', type=int, default=10, help='Threads number.')
+    parser.add_argument('--dst', type=str,
+                        default='/Ship01/Dataset/VOS/pretrain')
+    parser.add_argument('--palette', type=str,
+                        default='./assets/mask_palette.png')
+    parser.add_argument('--worker', type=int, default=2,
+                        help='Threads number.')
     parser.add_argument('--name', type=str, required=True)
     parser.add_argument('--src', type=str, required=True)
     return parser.parse_args()
@@ -64,8 +67,10 @@ def cvt_mask_palette(data):
 
 
 def cvt_MSRA10K():
-    img_list = sorted(glob(os.path.join(args.src, 'MSRA10K_Imgs_GT/Imgs/', '*.jpg')), key=lambda x: (len(x), x))
-    mask_list = sorted(glob(os.path.join(args.src, 'MSRA10K_Imgs_GT/Imgs/', '*.png')), key=lambda x: (len(x), x))
+    img_list = sorted(glob(os.path.join(
+        args.src, 'MSRA10K_Imgs_GT/Imgs/', '*.jpg')), key=lambda x: (len(x), x))
+    mask_list = sorted(glob(os.path.join(
+        args.src, 'MSRA10K_Imgs_GT/Imgs/', '*.png')), key=lambda x: (len(x), x))
 
     dst_img_dir = os.path.join(args.dst, 'JPEGImages', args.name)
     dst_mask_dir = os.path.join(args.dst, 'Annotations', args.name)
@@ -82,8 +87,10 @@ def cvt_MSRA10K():
 
 
 def cvt_ECSSD():
-    img_list = sorted(glob(os.path.join(args.src, 'images', '*.jpg')), key=lambda x: (len(x), x))
-    mask_list = sorted(glob(os.path.join(args.src, 'ground_truth_mask', '*.png')), key=lambda x: (len(x), x))
+    img_list = sorted(glob(os.path.join(args.src, 'images',
+                      '*.jpg')), key=lambda x: (len(x), x))
+    mask_list = sorted(glob(os.path.join(
+        args.src, 'ground_truth_mask', '*.png')), key=lambda x: (len(x), x))
 
     dst_img_dir = os.path.join(args.dst, 'JPEGImages', args.name)
     dst_mask_dir = os.path.join(args.dst, 'Annotations', args.name)
@@ -100,8 +107,10 @@ def cvt_ECSSD():
 
 
 def cvt_PASCALS():
-    img_list = sorted(glob(os.path.join(args.src, 'datasets/imgs/pascal', '*.jpg')), key=lambda x: (len(x), x))
-    mask_list = sorted(glob(os.path.join(args.src, 'datasets/masks/pascal', '*.png')), key=lambda x: (len(x), x))
+    img_list = sorted(glob(os.path.join(
+        args.src, 'datasets/imgs/pascal', '*.jpg')), key=lambda x: (len(x), x))
+    mask_list = sorted(glob(os.path.join(
+        args.src, 'datasets/masks/pascal', '*.png')), key=lambda x: (len(x), x))
 
     dst_img_dir = os.path.join(args.dst, 'JPEGImages', args.name)
     dst_mask_dir = os.path.join(args.dst, 'Annotations', args.name)
@@ -166,7 +175,9 @@ def cvt_COCO():
     # val2017
     anno_file = os.path.join(args.src, 'annotations', 'instances_val2017.json')
     print('Annotation path:', anno_file)
-    coco = COCO(anno_file)  # Global var must be initialized before multiprocessing.Pool
+
+    # Global var must be initialized before multiprocessing.Pool
+    coco = COCO(anno_file)
     img_list = coco.getImgIds()
     img_list = [(x, dst_img_dir, dst_mask_dir) for x in img_list]
     pools = multiprocessing.Pool(worker_n)
@@ -175,9 +186,12 @@ def cvt_COCO():
     pools.join()
 
     # Train 2017
-    anno_file = os.path.join(args.src, 'annotations', 'instances_train2017.json')
+    anno_file = os.path.join(args.src, 'annotations',
+                             'instances_train2017.json')
     print('Annotation path:', anno_file)
-    coco = COCO(anno_file)  # Global var must be initialized before multiprocessing.Pool
+
+    # Global var must be initialized before multiprocessing.Pool
+    coco = COCO(anno_file)
     img_list = coco.getImgIds()
     img_list = [(x, dst_img_dir, dst_mask_dir) for x in img_list]
     pools = multiprocessing.Pool(worker_n)
@@ -206,10 +220,12 @@ def cvt_VOC2012():
     with open(os.path.join(img_set), 'r') as lines:
         for line in lines:
             img_name = line.strip()
-            img_path_list.append(os.path.join(args.src, 'JPEGImages', img_name + '.jpg'))
+            img_path_list.append(os.path.join(
+                args.src, 'JPEGImages', img_name + '.jpg'))
             dst_mask_path = os.path.join(dst_mask_dir, img_name + '.png')
             mask_path_list.append((
-                os.path.join(args.src, 'SegmentationObject', img_name + '.png'),
+                os.path.join(args.src, 'SegmentationObject',
+                             img_name + '.png'),
                 dst_mask_path
             ))
 

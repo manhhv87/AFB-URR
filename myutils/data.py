@@ -136,5 +136,3 @@ def save_overlay(img, mask, overlay_path, colors=[255, 0, 0], alpha=0.4, cscale=
 
     img_overlay = add_overlay(img, mask, colors, alpha, cscale)
     cv2.imwrite(overlay_path, img_overlay)
-
-

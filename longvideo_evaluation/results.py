@@ -10,7 +10,8 @@ class Results(object):
 
     def _read_mask(self, sequence, frame_id):
         try:
-            mask_path = os.path.join(self.root_dir, sequence, f'{frame_id}.png')
+            mask_path = os.path.join(
+                self.root_dir, sequence, f'{frame_id}.png')
             return np.array(Image.open(mask_path))
         except IOError as err:
             sys.stdout.write(sequence + " frame %s not found!\n" % frame_id)

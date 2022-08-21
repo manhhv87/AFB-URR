@@ -78,7 +78,8 @@ def train_model(model, dataloader, criterion, optimizer, desc):
 
         uncertainty_stats.update(uncertainty.item())
         stats.update(loss.item())
-        progress_bar.set_postfix(loss=f'{loss.item():.5f} ({stats.avg:.5f} {uncertainty_stats.avg:.5f})')
+        progress_bar.set_postfix(
+            loss=f'{loss.item():.5f} ({stats.avg:.5f} {uncertainty_stats.avg:.5f})')
 
         # For debug
         # print(info)
@@ -93,19 +94,24 @@ def main():
     # torch.autograd.set_detect_anomaly(True)
 
     if args.level == 0:
-        dataset = PreTrain_DS(args.dataset, output_size=400, clip_n=args.clip_n, max_obj_n=args.obj_n)
+        dataset = PreTrain_DS(args.dataset, output_size=400,
+                              clip_n=args.clip_n, max_obj_n=args.obj_n)
         desc = 'Pre Train'
     elif args.level == 1:
-        dataset = DAVIS_Train_DS(args.dataset, output_size=400, clip_n=args.clip_n, max_obj_n=args.obj_n)
+        dataset = DAVIS_Train_DS(
+            args.dataset, output_size=400, clip_n=args.clip_n, max_obj_n=args.obj_n)
         desc = 'Train DAVIS17'
     elif args.level == 2:
-        dataset = YouTube_Train_DS(args.dataset, output_size=400, clip_n=args.clip_n, max_obj_n=args.obj_n)
+        dataset = YouTube_Train_DS(
+            args.dataset, output_size=400, clip_n=args.clip_n, max_obj_n=args.obj_n)
         desc = 'Train YV18'
     else:
         raise ValueError(f'{args.level} is unknown.')
 
-    dataloader = data.DataLoader(dataset, batch_size=1, shuffle=True, num_workers=2, pin_memory=True)
-    print(myutils.gct(), f'Load level {args.level} dataset: {len(dataset)} training cases.')
+    dataloader = data.DataLoader(
+        dataset, batch_size=1, shuffle=True, num_workers=2, pin_memory=True)
+    print(myutils.gct(),
+          f'Load level {args.level} dataset: {len(dataset)} training cases.')
 
     model = AFB_URR(device, update_bank=False, load_imagenet_params=True)
     model = model.to(device)
@@ -113,7 +119,8 @@ def main():
     model.apply(myutils.set_bn_eval)  # turn-off BN
 
     params = model.parameters()
-    optimizer = torch.optim.AdamW(filter(lambda x: x.requires_grad, params), args.lr)
+    optimizer = torch.optim.AdamW(
+        filter(lambda x: x.requires_grad, params), args.lr)
 
     start_epoch = 0
     best_loss = 100000000
@@ -134,7 +141,8 @@ def main():
                     seed = int(time.time())
                 else:
                     seed = args.seed
-                print(myutils.gct(), f'Loaded checkpoint {args.resume}. Train from the beginning.')
+                print(
+                    myutils.gct(), f'Loaded checkpoint {args.resume}. Train from the beginning.')
         else:
             print(myutils.gct(), f'No checkpoint found at {args.resume}')
             raise IOError
@@ -211,9 +219,12 @@ if __name__ == '__main__':
         if not os.path.exists(model_path):
             os.makedirs(model_path)
         myutils.save_scripts(log_dir, scripts_to_save=glob('*.*'))
-        myutils.save_scripts(log_dir, scripts_to_save=glob('dataset/*.py', recursive=True))
-        myutils.save_scripts(log_dir, scripts_to_save=glob('model/*.py', recursive=True))
-        myutils.save_scripts(log_dir, scripts_to_save=glob('myutils/*.py', recursive=True))
+        myutils.save_scripts(log_dir, scripts_to_save=glob(
+            'dataset/*.py', recursive=True))
+        myutils.save_scripts(log_dir, scripts_to_save=glob(
+            'model/*.py', recursive=True))
+        myutils.save_scripts(log_dir, scripts_to_save=glob(
+            'myutils/*.py', recursive=True))
 
         vis_writer = SummaryWriter(log_path)
         vis_writer_step = 0

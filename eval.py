@@ -67,7 +67,8 @@ def eval_DAVIS(model, model_name, dataloader):
             overlay_path = os.path.join(overlay_dir, '00000.png')
             myutils.save_overlay(frames[0], pred, overlay_path, palette)
 
-        fb = FeatureBank(obj_n, args.budget, device, update_rate=args.update_rate, thres_close=args.merge_thres)
+        fb = FeatureBank(obj_n, args.budget, device,
+                         update_rate=args.update_rate, thres_close=args.merge_thres)
         k4_list, v4_list = model.memorize(frames[0:1], pred_mask)
         fb.init_bank(k4_list, v4_list)
 
@@ -77,7 +78,8 @@ def eval_DAVIS(model, model_name, dataloader):
 
             pred_mask = F.softmax(score, dim=1)
 
-            pred = torch.argmax(pred_mask[0], dim=0).cpu().numpy().astype(np.uint8)
+            pred = torch.argmax(
+                pred_mask[0], dim=0).cpu().numpy().astype(np.uint8)
             seg_path = os.path.join(seg_dir, f'{t:05d}.png')
             myutils.save_seg_mask(pred, seg_path, palette)
 
@@ -108,9 +110,11 @@ def eval_YouTube(model, model_name, dataloader):
         obj_n = obj_n.item()
         obj_st = [info['obj_st'][0, i].item() for i in range(obj_n)]
         basename_list = [info['basename_list'][i][0] for i in range(frame_n)]
-        basename_to_save = [info['basename_to_save'][i][0] for i in range(len(info['basename_to_save']))]
+        basename_to_save = [info['basename_to_save'][i][0]
+                            for i in range(len(info['basename_to_save']))]
         obj_vis = info['obj_vis'][0]
-        original_size = (info['original_size'][0].item(), info['original_size'][1].item())
+        original_size = (info['original_size'][0].item(),
+                         info['original_size'][1].item())
 
         seg_dir = os.path.join('./output', model_name, seq_name)
         if not os.path.exists(seg_dir):
@@ -129,12 +133,14 @@ def eval_YouTube(model, model_name, dataloader):
         pred_mask[0, 0] = 1 - pred_mask.sum(dim=1)
 
         pred_mask_output = F.interpolate(pred_mask, original_size)
-        pred = torch.argmax(pred_mask_output[0], dim=0).cpu().numpy().astype(np.uint8)
+        pred = torch.argmax(
+            pred_mask_output[0], dim=0).cpu().numpy().astype(np.uint8)
         seg_path = os.path.join(seg_dir, basename_list[0] + '.png')
         myutils.save_seg_mask(pred, seg_path, palette)
 
         if args.viz:
-            frame_out = F.interpolate(frames[0].unsqueeze(0), original_size).squeeze(0)
+            frame_out = F.interpolate(
+                frames[0].unsqueeze(0), original_size).squeeze(0)
             overlay_path = os.path.join(overlay_dir, basename_list[0] + '.png')
             myutils.save_overlay(frame_out, pred, overlay_path, palette)
 
@@ -174,14 +180,18 @@ def eval_YouTube(model, model_name, dataloader):
 
             if basename_list[t] in basename_to_save:
                 pred_mask_output = F.interpolate(score, original_size)
-                pred = torch.argmax(pred_mask_output[0], dim=0).cpu().numpy().astype(np.uint8)
+                pred = torch.argmax(
+                    pred_mask_output[0], dim=0).cpu().numpy().astype(np.uint8)
                 seg_path = os.path.join(seg_dir, basename_list[t] + '.png')
                 myutils.save_seg_mask(pred, seg_path, palette)
 
                 if args.viz:
-                    frame_out = F.interpolate(frames[t].unsqueeze(0), original_size).squeeze(0)
-                    overlay_path = os.path.join(overlay_dir, basename_list[t] + '.png')
-                    myutils.save_overlay(frame_out, pred, overlay_path, palette)
+                    frame_out = F.interpolate(
+                        frames[t].unsqueeze(0), original_size).squeeze(0)
+                    overlay_path = os.path.join(
+                        overlay_dir, basename_list[t] + '.png')
+                    myutils.save_overlay(
+                        frame_out, pred, overlay_path, palette)
 
         fb.print_peak_mem()
 
@@ -193,7 +203,8 @@ def eval_LongVideo(model, model_name, dataloader):
         seq_name = video_name[0]
 
         seq_dataset = Video_DS(img_dir[0], mask_dir[0])
-        seq_loader = utils.data.DataLoader(seq_dataset, batch_size=1, shuffle=False, num_workers=2)
+        seq_loader = utils.data.DataLoader(
+            seq_dataset, batch_size=1, shuffle=False, num_workers=2)
 
         seg_dir = os.path.join('./output', model_name, seq_name)
         if not os.path.exists(seg_dir):
@@ -215,10 +226,12 @@ def eval_LongVideo(model, model_name, dataloader):
         myutils.save_seg_mask(pred, seg_path, palette)
 
         if args.viz:
-            overlay_path = os.path.join(overlay_dir, f'{seq_dataset.first_name}.png')
+            overlay_path = os.path.join(
+                overlay_dir, f'{seq_dataset.first_name}.png')
             myutils.save_overlay(first_frame[0], pred, overlay_path, palette)
 
-        fb = FeatureBank(obj_n, args.budget, device, update_rate=args.update_rate, thres_close=args.merge_thres)
+        fb = FeatureBank(obj_n, args.budget, device,
+                         update_rate=args.update_rate, thres_close=args.merge_thres)
 
         k4_list, v4_list = model.memorize(first_frame, pred_mask)
         fb.init_bank(k4_list, v4_list)
@@ -231,7 +244,8 @@ def eval_LongVideo(model, model_name, dataloader):
             score, _ = model.segment(frame, fb)
 
             pred_mask = F.softmax(score, dim=1)
-            pred = torch.argmax(pred_mask[0], dim=0).cpu().numpy().astype(np.uint8)
+            pred = torch.argmax(
+                pred_mask[0], dim=0).cpu().numpy().astype(np.uint8)
             seg_path = os.path.join(seg_dir, f'{frame_name[0]}.png')
             myutils.save_seg_mask(pred, seg_path, palette)
 
@@ -240,7 +254,8 @@ def eval_LongVideo(model, model_name, dataloader):
                 fb.update(k4_list, v4_list, t)
 
             if args.viz:
-                overlay_path = os.path.join(overlay_dir, f'{frame_name[0]}.png')
+                overlay_path = os.path.join(
+                    overlay_dir, f'{frame_name[0]}.png')
                 myutils.save_overlay(frame[0], pred, overlay_path, palette)
 
         fb.print_peak_mem()
@@ -278,7 +293,8 @@ def main():
 
     if args.prefix:
         model_name += f'_{args.prefix}'
-    dataloader = utils.data.DataLoader(dataset, batch_size=1, shuffle=False, num_workers=1)
+    dataloader = utils.data.DataLoader(
+        dataset, batch_size=1, shuffle=False, num_workers=1)
     print(myutils.gct(), f'Model name: {model_name}')
 
     if args.level == 1:
@@ -299,7 +315,8 @@ if __name__ == '__main__':
     else:
         raise ValueError('CUDA is required. --gpu must be >= 0.')
 
-    palette = Image.open(os.path.join('./assets/mask_palette.png')).getpalette()
+    palette = Image.open(os.path.join(
+        './assets/mask_palette.png')).getpalette()
 
     main()
 
